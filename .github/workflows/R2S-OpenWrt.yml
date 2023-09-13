@@ -17,13 +17,7 @@ jobs:
         echo -e "Total CPU cores\t: $(nproc)"
         cat /proc/cpuinfo | grep 'model name'
         cpu_name=$(cat /proc/cpuinfo | grep "model name" | head -n 1 | awk -F: '{print $2}' | sed 's/^[ \t]*//')
-        if [[ ! "$cpu_name" =~ "8370C" ]]; then
-        echo "CPU不为8370C，性能不足，停止执行命令"
-        exit 1
-        else
-        echo "CPU为8370C，继续执行命令"
-        ulimit -a
-        fi
+
     - name: Maximize build space
       uses: easimon/maximize-build-space@master
       with:
@@ -52,7 +46,10 @@ jobs:
         sudo -E apt-get -qq clean
         sudo -E git config --global user.name 'GitHub Actions' && git config --global user.email 'noreply@github.com'
         sudo -E git config --global core.abbrev auto
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php
         df -h
+        
     - name: Prepare Mixedwrt
       run: |
         sudo chown -R runner:runner /home/runner/work/YAOF
