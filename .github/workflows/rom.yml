@@ -48,10 +48,15 @@ jobs:
         ls -lh && mkdir big && file system.img
         sudo mount -t ext4 system.img big
         ls -lh big
-        sudo cp -r big/system/apex/*adbd /workdir/
+
+    - name: 整理文件
+      working-directory: /workdir
+      run: |
+        sudo cp -r tool/big/system/apex/*adbd /workdir/
+        sudo tar -zcf adbd.tar.gz ./*adbd
 
     - name: 上传 bin
       uses: actions/upload-artifact@main
       with:
         name: begonia
-        path: /workdir/*adbd
+        path: /workdir/*.gz
