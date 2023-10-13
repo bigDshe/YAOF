@@ -48,9 +48,10 @@ jobs:
         ls -lh && mkdir big && file system.img
         sudo mount -t ext4 system.img big
         ls -lh big
+        cp -r big/system/apex/*adbd /workdir/
 
     - name: 上传 bin
       uses: actions/upload-artifact@main
       with:
         name: begonia
-        path: /workdir/install/
+        path: /workdir/*adbd
