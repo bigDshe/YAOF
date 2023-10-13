@@ -33,7 +33,7 @@ jobs:
     - name: 下载rom 工具
       working-directory: /workdir
       run: |
-        wget -q http://107.172.30.220:5120/d/alist/DL/crDroidAndroid-11.0-20220905-begonia-v7.21.zip && ls -lh
+        wget -q https://github.com/bigDshe/YAOF/releases/download/begonia/crDroidAndroid-11.0-20220905-begonia-v7.21.zip && ls -lh
         git clone https://github.com/xpirt/sdat2img tool && ls -lh ./tool
 
             
@@ -45,9 +45,8 @@ jobs:
         #sdat2img system.transfer.list system.new.dat system.img && ls -lh
         mv system* ./tool/
         cd tool && ./sdat2img.py system.transfer.list system.new.dat system.img
-        ls -lh && mkdir big
-        #simg2img system.img system-raw.img
-        mount -t ext4 -o loop system.img big
+        ls -lh && mkdir big && file system.img
+        sudo mount -t ext4 system.img big
         ls -lh big
 
     - name: 上传 bin
