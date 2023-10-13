@@ -1,0 +1,62 @@
+name: 安卓解包
+
+on:
+#  schedule:
+#    - cron: 5 6 * * 0
+ workflow_dispatch:
+
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+    - name: Show system
+      run: |
+        echo -e "Total CPU cores\t: $(nproc)"
+        cat /proc/cpuinfo | grep 'model name'
+        cpu_name=$(cat /proc/cpuinfo | grep "model name" | head -n 1 | awk -F: '{print $2}' | sed 's/^[ \t]*//')
+
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@master
+      with:
+        swap-size-mb: 512
+        temp-reserve-mb: 100
+        root-reserve-mb: 1280
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+
+    - name: Checkout
+      uses: actions/checkout@main
+      
+    - name: 环境设置
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo swapoff -a
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install unzip simg2img brotli sdat2img
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php
+        sudo mkdir -p /workdir && ls
+        sudo chown $USER:$GROUPS /workdir
+        ln -sf /workdir $GITHUB_WORKSPACE/ROM
+        df -h && ls -lh
+
+    - name: 下载rom
+      working-directory: /workdir
+      run: |
+        wget https://newcontinuum.dl.sourceforge.net/project/crdroid/begonia/7.x/crDroidAndroid-11.0-20220905-begonia-v7.21.zip && ls -lh
+        unzip *.zip && ls -lh
+        brotli -d system.new.dat.br && ls -lh
+        sdat2img system.transfer.list system.new.dat system.img && ls -lh
+
+    - name: 上传 bin
+      uses: actions/upload-artifact@main
+      with:
+        name: begonia
+        path: /workdir/install/
