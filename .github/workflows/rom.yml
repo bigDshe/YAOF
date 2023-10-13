@@ -39,7 +39,7 @@ jobs:
         sudo swapoff -a
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install unzip simg2img brotli sdat2img
+        sudo -E apt-get -qq install unzip simg2img brotli
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php
         sudo mkdir -p /workdir && ls
