@@ -12,13 +12,6 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-    - name: Show system
-      run: |
-        echo -e "Total CPU cores\t: $(nproc)"
-        cat /proc/cpuinfo | grep 'model name'
-        cpu_name=$(cat /proc/cpuinfo | grep "model name" | head -n 1 | awk -F: '{print $2}' | sed 's/^[ \t]*//')
-
-
     - name: Checkout
       uses: actions/checkout@main
       
@@ -40,13 +33,26 @@ jobs:
     - name: 下载rom
       working-directory: /workdir
       run: |
-        wget https://newcontinuum.dl.sourceforge.net/project/crdroid/begonia/7.x/crDroidAndroid-11.0-20220905-begonia-v7.21.zip && ls -lh
+        wget -q https://newcontinuum.dl.sourceforge.net/project/crdroid/begonia/7.x/crDroidAndroid-11.0-20220905-begonia-v7.21.zip && ls -lh
         unzip *.zip && ls -lh
         brotli -d system.new.dat.br && ls -lh
-        sdat2img system.transfer.list system.new.dat system.img && ls -lh
+        #sdat2img system.transfer.list system.new.dat system.img && ls -lh
 
     - name: 上传 bin
       uses: actions/upload-artifact@main
       with:
         name: begonia
         path: /workdir/install/
+        
+
+    - name: Create release
+      uses: ncipollo/release-action@v1.12.0
+      with:
+        name: begonia-crdroid-11
+        allowUpdates: true
+        prerelease: false
+        tag: begonia
+        commit: 23.05
+        replacesArtifacts: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: /workdir/*.zip
