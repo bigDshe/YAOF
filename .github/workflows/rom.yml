@@ -46,8 +46,8 @@ jobs:
         mv system* ./tool/
         cd tool && ./sdat2img.py system.transfer.list system.new.dat system.img
         ls -lh && mkdir big
-        simg2img system.img system-raw.img
-        mount -t ext4 -o loop system-raw.img big
+        #simg2img system.img system-raw.img
+        mount -t ext4 -o loop system.img big
         ls -lh big
 
     - name: 上传 bin
